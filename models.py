@@ -1,4 +1,5 @@
 from mongoengine import *
+import database
 
 class User(Document):
     email=EmailField(Required=True)
