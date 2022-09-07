@@ -1,55 +1,5 @@
-let myChart = echarts.init(document.getElementById('stock-chart'));
-const MILLIS_PER_MINUTE = 60000;
-let currentDate = new Date();
-let value = 100;
-
-let exampleData = [
-    {
-        "stock": "GOOGL",
-        "history": [
-            {
-                "value": 180.10,
-                "timestamp": new Date(currentDate - 5 * MILLIS_PER_MINUTE)
-            },
-            {
-                "value": 215.10,
-                "timestamp": new Date(currentDate)
-            }
-        ]
-    },
-    {
-        "stock": "AMZN",
-        "history": [
-
-            {
-                "value": 150.10,
-                "timestamp": new Date(currentDate - 5 * MILLIS_PER_MINUTE)
-            },
-            {
-                "value": 202.10,
-                "timestamp": new Date(currentDate)
-            }
-        ]
-    }
-]
-
-let series = exampleData.map(function (stock) {
-    return {
-        type: 'line',
-        showSymbol: false,
-        data: stock['history'].reduce(function (acc, curr) {
-            acc.push({
-                name: curr.timestamp.toString(),
-                value: [curr.timestamp.toISOString(), curr.value]
-            })
-            return acc
-        }, [])
-    }
-})
-
-
-// Specify the configuration items and data for the chart
-let option = {
+let stockChart;
+const LINE_CHART_CONFIG = {
     title: {
         text: 'Stock values'
     },
@@ -65,33 +15,75 @@ let option = {
     tooltip: {
         order: 'valueDesc',
         trigger: 'axis'
-    }
-    ,
-    series: series
+    },
 };
 
-function randomData(last) {
-    if (!last) {
-        currentDate = new Date(+currentDate + 1000 * 60);
-    }
-    value = value + Math.random() * 21 - 10;
+function initializeLineChart(elementId, initialSeriesData = []) {
+    let chart = echarts.init(document.getElementById(elementId));
+    let chartConfig = Object.assign(LINE_CHART_CONFIG);
+    chartConfig.series = initialSeriesData;
+    chart.setOption(chartConfig);
+    return chart;
+}
+
+function convertAssetsToChartSeries(assets, historyAttribute) {
+    return assets.map(function (asset) {
+        let seriesTemplate = getLineChartSeriesTemplate();
+        asset[historyAttribute].reduce(function (updates, assetUpdate) {
+            updates.push(toTimeSeriesDataFormat(assetUpdate['timestamp'], assetUpdate['value']));
+            return updates;
+        }, seriesTemplate.data);
+        return seriesTemplate;
+    });
+}
+
+function toTimeSeriesDataFormat(timestamp, value) {
     return {
-        name: currentDate.toString(),
-        value: [
-            currentDate.toISOString(),
-            Math.round(value)
-        ]
+        name: timestamp.toString(),
+        value: [timestamp.toISOString(), value]
     };
 }
 
-setInterval(function () {
-    series[0].data.push(randomData());
-    series[1].data.push(randomData(true));
+function getLineChartSeriesTemplate() {
+    return {
+        type: 'line',
+        showSymbol: false,
+        data: []
+    };
+}
 
-    myChart.setOption({
-        series: series
-    });
-}, 1000);
+function getStockExampleData() {
+    const MILLIS_PER_MINUTE = 60000;
+    let currentDate = new Date();
+    return [
+        {
+            "stock": "GOOGL",
+            "history": [
+                {
+                    "value": 180.10,
+                    "timestamp": new Date(currentDate - 5 * MILLIS_PER_MINUTE)
+                },
+                {
+                    "value": 215.10,
+                    "timestamp": new Date(currentDate)
+                }
+            ]
+        },
+        {
+            "stock": "AMZN",
+            "history": [
 
-// Display the chart using the configuration items and data just specified.
-myChart.setOption(option);
+                {
+                    "value": 150.10,
+                    "timestamp": new Date(currentDate - 5 * MILLIS_PER_MINUTE)
+                },
+                {
+                    "value": 202.10,
+                    "timestamp": new Date(currentDate)
+                }
+            ]
+        }
+    ];
+}
+
+stockChart = initializeLineChart('stock-chart', convertAssetsToChartSeries(getStockExampleData(), 'history'));
