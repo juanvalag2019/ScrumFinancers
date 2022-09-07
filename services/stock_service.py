@@ -5,6 +5,8 @@ import finnhub
 from threading import Thread
 from dotenv import load_dotenv
 from constants import API_UPDATE_INTERVAL
+from models import Stock
+from repository.stock_repository import stock_repository
 
 class StockService(Thread):
 
@@ -51,9 +53,14 @@ class StockService(Thread):
     
     def stop_updating_stocks(self):
         self.updating_stocks=False
+    
+    def stock_value(self,name,limit):
+        stock=Stock(name=name, limit=limit)
+        return stock_repository.save_stock(stock)
+    
             
 
 
 
 stock_service=StockService()
-stock_service.start_updating_stocks()
+print(stock_service.stock_value('Juan',5.3).id)
