@@ -1,4 +1,5 @@
 let stockChart;
+let stockData = [];
 const LINE_CHART_CONFIG = {
     title: {
         text: 'Stock values'
@@ -17,6 +18,10 @@ const LINE_CHART_CONFIG = {
         trigger: 'axis'
     },
 };
+const ASSETS_URLS = {
+    stock: '/stocks',
+    stockUpdates: '/stocks/updates'
+}
 
 function initializeLineChart(elementId, initialSeriesData = []) {
     let chart = echarts.init(document.getElementById(elementId));
@@ -84,6 +89,22 @@ function getStockExampleData() {
             ]
         }
     ];
+}
+
+function getStockData() {
+    getRequest(ASSETS_URLS.stock,
+        function (stocks) {
+            stocks.forEach(function (stock) {
+                stock['history'].forEach(function (stockUpdate) {
+                    stockUpdate.timestamp = new Date(stockUpdate.timestamp);
+                })
+            })
+            stockData = stocks;
+            stockChart = initializeLineChart('stock-chart', convertAssetsToChartSeries(stockData, 'history'));
+        },
+        function (errorInfo) {
+            console.log(errorInfo);
+        });
 }
 
 stockChart = initializeLineChart('stock-chart', convertAssetsToChartSeries(getStockExampleData(), 'history'));
