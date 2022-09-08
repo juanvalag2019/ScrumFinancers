@@ -16,6 +16,13 @@ class CryptoService(Thread):
     def __init__(self) :
         Thread.__init__(self)
         load_dotenv()
+        self.cryptos=[{
+            'name': 'Bitcoin'
+        },{
+            'name': 'Ethereum'
+        },{
+            'name': 'Maker'
+        },]
         self.url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
         self.parameters = { 'slug': 'bitcoin,ethereum,maker', 'convert': 'USD' }
         self.headers = {
@@ -28,6 +35,7 @@ class CryptoService(Thread):
         self.update_interval=API_UPDATE_INTERVAL
         self.last_update=None
         self.last_crypto_values=None
+        self.set_cryptos_limits()
 
     def start_updating_cryptos(self):
         self.updating_cryptos=True
@@ -42,7 +50,7 @@ class CryptoService(Thread):
             current_price= data['data'][crypto]['quote']['USD']['price']
             crypto_updates.append({
                 'name':crypto_name,
-                'price':current_price
+                'value':current_price
             })
         return crypto_updates
 
@@ -55,6 +63,7 @@ class CryptoService(Thread):
                 self.last_update=datetime.datetime.utcnow()
             for crypto_update in crypto_updates:
                 crypto_update['timestamp']=self.last_update
+                crypto_repository.save_crypto_update(crypto_update['name'], CryptoHistory(value=crypto_update['value'], timestamp=crypto_update['timestamp']))
             self.last_crypto_values=crypto_updates
             print(crypto_updates)
             time.sleep(self.update_interval)
@@ -69,6 +78,12 @@ class CryptoService(Thread):
     def create_crypto(self,name,limit):
         crypto=Crypto(name=name, limit=limit)
         return crypto_repository.save_crypto(crypto)
+
+    def set_cryptos_limits(self):
+        for crypto in self.cryptos:
+            crypto_entity=crypto_repository.get_crypto(crypto['name'])
+            crypto['limit']=crypto_entity['limit']
+        print(self.cryptos)
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template
-import services.stock_service
+#import services.stock_service
 import services.crypto_service
 
 app = Flask(__name__)

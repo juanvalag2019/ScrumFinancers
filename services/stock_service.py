@@ -56,9 +56,9 @@ class StockService(Thread):
                 self.last_update=datetime.datetime.utcnow()
             for stock_update in stock_updates:
                 stock_update['timestamp']=self.last_update
-                print(stock_update)
                 stock_repository.save_stock_update(stock_update['name'], StockHistory(value=stock_update['value'], timestamp=stock_update['timestamp']))
             self.last_stock_values=stock_updates
+            print(stock_updates)
             time.sleep(self.update_interval)
     
     def stop_updating_stocks(self):
