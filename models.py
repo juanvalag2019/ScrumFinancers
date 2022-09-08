@@ -2,31 +2,31 @@ from mongoengine import *
 import database
 
 class User(Document):
-    email=EmailField(Required=True)
+    email=EmailField(required=True,unique=True)
     meta = {
         'collection': 'user'
     }
 
 class StockHistory(EmbeddedDocument):
-    value=FloatField(Required=True)
-    timestamp=DateTimeField(Required=True)
+    value=FloatField(required=True)
+    timestamp=DateTimeField(required=True)
 
 class Stock(Document):
-    name=StringField(Required=True)
-    limit=FloatField(Required=True)
-    StockHistory=ListField(EmbeddedDocumentField(StockHistory))
+    name=StringField(required=True,unique=True)
+    limit=FloatField(required=True)
+    stock_history=ListField(EmbeddedDocumentField(StockHistory))
     meta = {
         'collection': 'Stock'
     }
 
 class CryptoHistory(EmbeddedDocument):
-    value=FloatField(Required=True)
-    timestamp=DateTimeField(Required=True)
+    value=FloatField(required=True)
+    timestamp=DateTimeField(required=True)
 
 class Crypto(Document):
-    name=StringField(Required=True)
-    limit=FloatField(Required=True)
-    CryptoHistory=ListField(EmbeddedDocumentField(CryptoHistory))
+    name=StringField(required=True,unique=True)
+    limit=FloatField(required=True)
+    crypto_history=ListField(EmbeddedDocumentField(CryptoHistory))
     meta = {
         'collection': 'Crypto'
     }
