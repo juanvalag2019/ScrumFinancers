@@ -107,4 +107,34 @@ function getStockData() {
         });
 }
 
+function insertTableRowData(tableId, values) {
+    console.log(values);
+    let htmlToInsert = '<tr>'
+    let rows = values.forEach(function (cellValue) { htmlToInsert += '<td>' + cellValue + '</td>' });
+    htmlToInsert += '</tr>'
+    console.log(htmlToInsert);
+    $('#' + tableId).append(htmlToInsert);
+}
+
+function transformAssetsHistoriesToRows(assets, historyAttribute) {
+    let rows = [];
+    let histories = assets.map(function (asset) { return asset[historyAttribute] });
+    histories[0].forEach(function (assetUpdate, idx) {
+        let timestamp = assetUpdate.timestamp;
+        let value1 = assetUpdate.value;
+        let value2 = histories[1][idx].value;
+        rows.push([formatDate(timestamp), value1, value2]);
+    });
+    return rows;
+}
+
+function formatDate(date) {
+    let hours = date.getHours() / 12 > 1 ? date.getHours() % 12 : date.getHours();
+    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${hours}:${date.getMinutes()}:${date.getSeconds()}`;
+}
+
 stockChart = initializeLineChart('stock-chart', convertAssetsToChartSeries(getStockExampleData(), 'history'));
+let tableRows = transformAssetsHistoriesToRows(getStockExampleData(), 'history');
+tableRows.forEach(function (row) {
+    insertTableRowData('assets-table', row);
+});
