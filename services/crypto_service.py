@@ -60,7 +60,7 @@ class CryptoService(Thread):
             if(self.last_update):
                 self.last_update=self.last_update+datetime.timedelta(seconds=self.update_interval)
             else:
-                self.last_update=datetime.datetime.utcnow()
+                self.last_update=datetime.datetime.now()
             for crypto_update in crypto_updates:
                 crypto_update['timestamp']=self.last_update
                 crypto_repository.save_crypto_update(crypto_update['name'], CryptoHistory(value=crypto_update['value'], timestamp=crypto_update['timestamp']))
@@ -83,7 +83,6 @@ class CryptoService(Thread):
         for crypto in self.cryptos:
             crypto_entity=crypto_repository.get_crypto(crypto['name'])
             crypto['limit']=crypto_entity['limit']
-        print(self.cryptos)
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()

@@ -53,7 +53,7 @@ class StockService(Thread):
             if(self.last_update):
                 self.last_update=self.last_update+datetime.timedelta(seconds=self.update_interval)
             else:
-                self.last_update=datetime.datetime.utcnow()
+                self.last_update=datetime.datetime.now()
             for stock_update in stock_updates:
                 stock_update['timestamp']=self.last_update
                 stock_repository.save_stock_update(stock_update['name'], StockHistory(value=stock_update['value'], timestamp=stock_update['timestamp']))
