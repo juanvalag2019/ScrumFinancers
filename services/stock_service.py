@@ -15,11 +15,19 @@ class StockService(Thread):
         Thread.__init__(self)
         load_dotenv()
         self.api_client=finnhub.Client(api_key=os.environ['STOCK_API_KEY'])
-        self.stock_names=['AAPL', 'GOOGL', 'AMZN']
+        self.stock_names=[{
+            'symbol':'AAPL', 'name':'Apple'
+        }, {
+            'symbol':'GOOGL', 'name':'Google'
+        }, {
+            'symbol':'AMZN', 'name':'Amazon'
+        }]
+        self.stocks=[]
         self.updating_stocks=False
         self.update_interval=API_UPDATE_INTERVAL
         self.last_update=None
         self.last_stock_values=None
+        self.set_stock_limits()
     
     def start_updating_stocks(self):
         self.updating_stocks=True
@@ -32,10 +40,10 @@ class StockService(Thread):
     def get_user_stocks_values(self):
         stock_updates=[]
         for stock in self.stock_names:
-            current_price=self.get_stock_value(stock)
+            current_price=self.get_stock_value(stock['symbol'])
             stock_updates.append({
-                'name':stock,
-                'price':current_price
+                'name':stock['name'],
+                'value':current_price
             })
         return stock_updates
 
@@ -48,8 +56,9 @@ class StockService(Thread):
                 self.last_update=datetime.datetime.utcnow()
             for stock_update in stock_updates:
                 stock_update['timestamp']=self.last_update
+                print(stock_update)
+                stock_repository.save_stock_update(stock_update['name'], StockHistory(value=stock_update['value'], timestamp=stock_update['timestamp']))
             self.last_stock_values=stock_updates
-            print(stock_updates)
             time.sleep(self.update_interval)
     
     def stop_updating_stocks(self):
@@ -62,6 +71,14 @@ class StockService(Thread):
     def create_stock(self,name,limit):
         stock=Stock(name=name, limit=limit)
         return stock_repository.save_stock(stock)
+
+    def set_stock_limits(self):
+        for stock_name in self.stock_names:
+            stock=stock_repository.get_stock(stock_name['name'])
+            if(stock != None):
+                stock_name['limit']=stock.limit
+                self.stocks.append(stock_name)
     
 
 stock_service=StockService()
+stock_service.start_updating_stocks()
