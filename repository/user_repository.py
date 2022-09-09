@@ -10,4 +10,9 @@ class UserRepository:
             return None
         return user
 
+    def get_user_emails(self):
+        try:
+            return [user['email'] for user in User.objects]
+        except (ValidationError,NotUniqueError):
+            return []
 user_repository = UserRepository()
