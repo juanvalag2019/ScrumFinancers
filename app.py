@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, jsonify
+from flask import render_template, jsonify,request
 from services.stock_service import stock_service
 from services.crypto_service import crypto_service
 from services.user_service import user_service
@@ -11,11 +11,11 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route("/useremail", methods=['POST'])
+@app.route("/useremail", methods=['POST', 'GET'])
 def subscribe_email():
     if(request.method=="POST"):
         user_service.create_user(request.form['useremail'])
-        return render_template("index.html")
+    return render_template("index.html")
 
 @app.route("/stocks", methods=['GET'])
 def get_stock_values():
