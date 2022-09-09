@@ -99,11 +99,11 @@ class CryptoService(Thread):
                 return True
             return False
 
-    def get_crypto_values_from_db(self):
-        #for crypto_name in self.cryptos:
-        #    crypto_repository.get_crypto(stock_name['name'])
-        #return
-        pass 
+    def get_cryptos_history(self):
+        cryptos=[]
+        for crypto in self.cryptos:
+            cryptos.append(crypto_repository.get_crypto(crypto['name']).serialize())
+        return cryptos
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()

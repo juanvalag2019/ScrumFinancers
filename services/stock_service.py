@@ -94,11 +94,11 @@ class StockService(Thread):
                 return True
             return False
     
-    def get_stock_values_from_db(self):
-        #for stock_name in self.stock_names:
-        #    stock_repository.get_stock(stock_name)
-        #return
-        pass 
+    def get_stocks_history(self):
+        stocks=[]
+        for stock in self.stocks:
+            stocks.append(stock_repository.get_stock(stock['name']).serialize())
+        return stocks
 
 stock_service=StockService()
 stock_service.start_updating_stocks()
