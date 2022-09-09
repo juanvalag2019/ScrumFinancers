@@ -32,7 +32,7 @@ class UserService:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = sender
-        msg['to'] = ''.join(recipients)
+        msg['To'] = ','.join(recipients)
         msg.attach(MIMEText(html_body, 'html'))
         smtp = SMTP(os.environ['MAIL_SERVER'], os.environ['MAIL_PORT'])
         smtp.ehlo()
