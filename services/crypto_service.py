@@ -61,7 +61,7 @@ class CryptoService(Thread):
             if(self.last_update):
                 self.last_update=self.last_update+datetime.timedelta(seconds=self.update_interval)
             else:
-                self.last_update=datetime.datetime.now()
+                self.last_update=datetime.datetime.utcnow()
             updates_to_email=[]
             for crypto_update, crypto in zip(crypto_updates, self.cryptos):
                 crypto_update['timestamp']=self.last_update
@@ -98,6 +98,12 @@ class CryptoService(Thread):
             if(crypto_update['value']>limit):
                 return True
             return False
+
+    def get_cryptos_history(self):
+        cryptos=[]
+        for crypto in self.cryptos:
+            cryptos.append(crypto_repository.get_crypto(crypto['name']).serialize())
+        return cryptos
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()

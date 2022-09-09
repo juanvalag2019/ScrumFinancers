@@ -1,5 +1,7 @@
+from time import time
 from models import Stock
 from mongoengine.errors import DoesNotExist, ValidationError,NotUniqueError
+import datetime
 
 
 class StockRepository:
@@ -25,6 +27,25 @@ class StockRepository:
             return stock
         except DoesNotExist:
             return None
+
+    def get_stock_update(self,timestamp):
+        pipeline = [
+            {"$project": { 
+                "stock_history":{
+                    "$filter":{
+                        "input":"$stock_history",
+                        "as": "update",
+                        "cond": {
+                            "gt":["$$update.timestamp", timestamp]
+                        }
+                    }
+                }
+            }}
+        ]
+        stocks=Stock.objects.aggregate(pipeline)
+        for stock in stocks:
+            print(stock)
+        return stocks
 
 
 stock_repository = StockRepository()

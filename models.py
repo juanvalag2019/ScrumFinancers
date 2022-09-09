@@ -11,6 +11,12 @@ class StockHistory(EmbeddedDocument):
     value=FloatField(required=True)
     timestamp=DateTimeField(required=True)
 
+    def serialize(self):
+        return {
+            'value': self.value,
+            'timestamp': self.timestamp
+        }
+
 class Stock(Document):
     name=StringField(required=True,unique=True)
     limit=FloatField(required=True)
@@ -19,9 +25,22 @@ class Stock(Document):
         'collection': 'Stock'
     }
 
+    def serialize(self):
+        return {
+            'name': self.name,
+            'limit': self.limit,
+            'history': [update.serialize() for update in self.stock_history]
+        }
+
 class CryptoHistory(EmbeddedDocument):
     value=FloatField(required=True)
     timestamp=DateTimeField(required=True)
+
+    def serialize(self):
+        return {
+            'value': self.value,
+            'timestamp': self.timestamp
+        }
 
 class Crypto(Document):
     name=StringField(required=True,unique=True)
@@ -30,3 +49,10 @@ class Crypto(Document):
     meta = {
         'collection': 'Crypto'
     }
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'limit': self.limit,
+            'history': [update.serialize() for update in self.crypto_history]
+        }
