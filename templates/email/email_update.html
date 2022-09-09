@@ -2,7 +2,7 @@
 <p>Some assets exceed the limits:</p>
 <ul>
     {% for update in updates %}
-    <li><strong>{{update.name}}</strong> limit: {{update.limit}}, current value:${{update.value}}</li>
+    <li><strong>{{update.name}}</strong> limit: ${{update.limit}}, current value: ${{update.value}}</li>
     {% endfor %}
 </ul>
 <p>Sincerely,</p>
