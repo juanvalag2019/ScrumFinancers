@@ -179,3 +179,6 @@ function runIfDataIsPresent(callback) {
 getStockData();
 getCryptoData();
 runIfDataIsPresent(configTable);
+setInterval(function () {
+    location.reload();
+}, 1000 * 60 * 5);
