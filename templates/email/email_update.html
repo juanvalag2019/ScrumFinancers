@@ -1,0 +1,9 @@
+<p>Dear Subscriber,</p>
+<p>There are some asset updates:</p>
+<ul>
+    {% for update in updates %}
+    <li>{{update.name}}:${{update.value}}</li>
+    {% endfor %}
+</ul>
+<p>Sincerely,</p>
+<p>The Financers Team</p>
