@@ -19,6 +19,9 @@ const LINE_CHART_CONFIG = {
         order: 'valueDesc',
         trigger: 'axis'
     },
+    grid: {
+        right: 140
+    }
 };
 const ASSETS_URLS = {
     stock: '/stocks',
@@ -42,17 +45,19 @@ function convertAssetsToChartSeries(assets, historyAttribute) {
     return assets.map(function (asset) {
         let seriesTemplate = getLineChartSeriesTemplate();
         asset[historyAttribute].reduce(function (updates, assetUpdate) {
-            updates.push(toTimeSeriesDataFormat(assetUpdate['timestamp'], assetUpdate['value']));
+            updates.push(toTimeSeriesDataFormat(asset['name'], assetUpdate['timestamp'], assetUpdate['value']));
             return updates;
         }, seriesTemplate.data);
         return seriesTemplate;
     });
 }
 
-function toTimeSeriesDataFormat(timestamp, value) {
+function toTimeSeriesDataFormat(name, timestamp, value) {
     return {
         name: timestamp.toString(),
-        value: [timestamp.toISOString(), value]
+        value: [timestamp.toISOString(), value],
+        assetName: name,
+        assetValue: value
     };
 }
 
@@ -60,6 +65,13 @@ function getLineChartSeriesTemplate() {
     return {
         type: 'line',
         showSymbol: false,
+        endLabel: {
+            show: true,
+            formatter: function (params) {
+                console.log(params);
+                return params.data.assetName + ': $' + params.data.assetValue;
+            }
+        },
         data: []
     };
 }
@@ -104,6 +116,7 @@ function getStockData() {
             stocks.forEach(function (stock) {
                 stock['history'].forEach(function (stockUpdate) {
                     stockUpdate.timestamp = new Date(stockUpdate.timestamp);
+                    stockUpdate.value = stockUpdate.value.toFixed(2);
                 })
             })
             stocksData = stocks;
@@ -120,9 +133,11 @@ function getCryptoData() {
             cryptos.forEach(function (crypto) {
                 crypto['history'].forEach(function (cryptoUpdate) {
                     cryptoUpdate.timestamp = new Date(cryptoUpdate.timestamp);
+                    cryptoUpdate.value = cryptoUpdate.value.toFixed(2);
                 })
             })
             cryptoData = cryptos;
+            console.log(cryptos);
             cryptoChart = initializeLineChart('crypto-chart', 'Crypto values', convertAssetsToChartSeries(cryptoData, 'history'));
             configTable();
         },
@@ -143,23 +158,29 @@ function transformAssetsHistoriesToRows(assets, historyAttribute) {
     let histories = assets.map(function (asset) { return asset[historyAttribute] });
     histories[0].forEach(function (assetUpdate, idx) {
         let timestamp = assetUpdate.timestamp;
-        let value1 = assetUpdate.value;
-        let value2 = histories[1][idx].value;
-        let value3 = histories[2][idx].value;
-        let value4 = histories[3][idx].value;
-        let value5 = histories[4][idx].value;
-        let value6 = histories[5][idx].value;
+        let value1 = '$' + assetUpdate.value;
+        let value2 = '$' + histories[1][idx].value;
+        let value3 = '$' + histories[2][idx].value;
+        let value4, value5, value6 = '';
+        if (histories.length > 3) {
+            value4 = '$' + histories[3][idx].value;
+            value5 = '$' + histories[4][idx].value;
+            value6 = '$' + histories[5][idx].value;
+        }
         rows.push([formatDate(timestamp), value1, value2, value3, value4, value5, value6]);
     });
     return rows;
 }
 
 function formatDate(date) {
-    let hours = date.getHours() / 12 > 1 ? date.getHours() % 12 : date.getHours();
-    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${hours}:${date.getMinutes()}:${date.getSeconds()}`;
+    let isEvening = date.getHours() / 12 > 1;
+    let hours = isEvening ? date.getHours() % 12 : date.getHours();
+    let ampm = isEvening ? 'pm' : 'am';
+    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${hours}:${date.getMinutes()}:${date.getSeconds()} ${ampm}`;
 }
 
 function configTable() {
+    console.log(stocksData, cryptoData);
     let rows = transformAssetsHistoriesToRows(stocksData.concat(cryptoData), 'history');
     rows.forEach(function (row) {
         insertTableRowData('assets-table', row);
@@ -168,7 +189,7 @@ function configTable() {
 
 function runIfDataIsPresent(callback) {
     setTimeout(function () {
-        if (stocksData && cryptoData) {
+        if (stocksData.length > 1 && cryptoData > 1) {
             callback();
         } else {
             runIfDataIsPresent(callback);

@@ -5,30 +5,58 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Assets Update</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
 </head>
 
 <body>
-    <div style="width: 100%; height: 500px;">
-        <div id="stock-chart" style="width: 600px;height:400px; float: left;"></div>
-        <div id="crypto-chart" style="width: 600px;height:400px; float: left;"></div>
+    <div class="container-fluid mx-2">
+        <div class="row pt-2">
+            <div class="col-6">
+                <div class="card">
+                    <h2 class="card-header">Stocks chart (USD)</h2>
+                    <div class="card-body">
+                        <div id="stock-chart" style="height:300px;" class="w-100"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <h2 class="card-header">Cryptocurrencies chart (USD)</h2>
+                    <div class="card-body">
+                        <div id="crypto-chart" style="height:300px;" class="w-100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <div class="card">
+                    <h2 class="card-header">Comparative table (USD)</h2>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="assets-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Apple</th>
+                                        <th>Google</th>
+                                        <th>Amazon</th>
+                                        <th>Bitcoin</th>
+                                        <th>Ethereum</th>
+                                        <th>Maker</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="table-section">
-        <table id="assets-table">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Apple</th>
-                    <th>Google</th>
-                    <th>Amazon</th>
-                    <th>Crypto1</th>
-                    <th>Crypto2</th>
-                    <th>Crypto3</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
     <script src="/static/js/jquery-3.6.1.min.js"></script>
     <script src="/static/js/request-utils.js"></script>
