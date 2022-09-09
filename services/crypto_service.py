@@ -9,6 +9,7 @@ from constants import API_UPDATE_INTERVAL
 from models import Crypto
 from models import CryptoHistory
 from repository.crypto_repository import crypto_repository
+from services.user_service import user_service
 from requests import Request, Session
 
 class CryptoService(Thread):
@@ -61,9 +62,16 @@ class CryptoService(Thread):
                 self.last_update=self.last_update+datetime.timedelta(seconds=self.update_interval)
             else:
                 self.last_update=datetime.datetime.now()
-            for crypto_update in crypto_updates:
+            updates_to_email=[]
+            for crypto_update, crypto in zip(crypto_updates, self.cryptos):
                 crypto_update['timestamp']=self.last_update
-                crypto_repository.save_crypto_update(crypto_update['name'], CryptoHistory(value=crypto_update['value'], timestamp=crypto_update['timestamp']))
+                name=crypto_update['name']
+                current_value=crypto_update['value']
+                crypto_repository.save_crypto_update(name, CryptoHistory(value=current_value, timestamp=crypto_update['timestamp']))
+                if(self.crypto_update_exceed_limit(crypto, crypto_update)):
+                    updates_to_email.append({'name':name, 'value':current_value,'limit':crypto['limit'],'is_stock':False })
+            if(updates_to_email):
+                user_service.send_email_updates(updates_to_email)
             self.last_crypto_values=crypto_updates
             print(crypto_updates)
             time.sleep(self.update_interval)
@@ -83,6 +91,13 @@ class CryptoService(Thread):
         for crypto in self.cryptos:
             crypto_entity=crypto_repository.get_crypto(crypto['name'])
             crypto['limit']=crypto_entity['limit']
+
+    def crypto_update_exceed_limit(self, crypto, crypto_update):
+        if(crypto['name']==crypto_update['name']):
+            limit=crypto['limit']
+            if(crypto_update['value']>limit):
+                return True
+            return False
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()
