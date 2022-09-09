@@ -61,7 +61,7 @@ class CryptoService(Thread):
             if(self.last_update):
                 self.last_update=self.last_update+datetime.timedelta(seconds=self.update_interval)
             else:
-                self.last_update=datetime.datetime.now()
+                self.last_update=datetime.datetime.utcnow()
             updates_to_email=[]
             for crypto_update, crypto in zip(crypto_updates, self.cryptos):
                 crypto_update['timestamp']=self.last_update
