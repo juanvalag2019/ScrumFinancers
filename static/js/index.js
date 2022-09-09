@@ -20,7 +20,9 @@ const LINE_CHART_CONFIG = {
 };
 const ASSETS_URLS = {
     stock: '/stocks',
-    stockUpdates: '/stocks/updates'
+    stockUpdates: '/stocks/updates',
+    crypto: '/cryptos',
+    cryptoUpdates: '/cryptos/updates'
 }
 
 function initializeLineChart(elementId, initialSeriesData = []) {
@@ -95,6 +97,7 @@ function getStockData() {
     getRequest(ASSETS_URLS.stock,
         function (stocks) {
             stocks.forEach(function (stock) {
+                console.log(stock['name'], stock['history']);
                 stock['history'].forEach(function (stockUpdate) {
                     stockUpdate.timestamp = new Date(stockUpdate.timestamp);
                 })
@@ -133,8 +136,4 @@ function formatDate(date) {
     return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${hours}:${date.getMinutes()}:${date.getSeconds()}`;
 }
 
-stockChart = initializeLineChart('stock-chart', convertAssetsToChartSeries(getStockExampleData(), 'history'));
-let tableRows = transformAssetsHistoriesToRows(getStockExampleData(), 'history');
-tableRows.forEach(function (row) {
-    insertTableRowData('assets-table', row);
-});
+getStockData();
