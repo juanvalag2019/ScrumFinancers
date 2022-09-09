@@ -8,9 +8,20 @@
     <title>Document</title>
 </head>
 
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+</style>
+
 <body>
-    <div id="stock-chart" style="width: 600px;height:400px;"></div>
-    <div class="table-section">
+    <form action="/useremail" align="right" method="post">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="useremail" placeholder="Insert your email">
+        <input type="submit" value="Submit">
+    </form>
+    <div id="stock-chart" style="width: 600px;height:400px;" align="center"></div>
+    <div class="table-section" align="center">
         <table id="assets-table">
             <thead>
                 <tr>
@@ -18,9 +29,9 @@
                     <th>Apple</th>
                     <th>Google</th>
                     <th>Amazon</th>
-                    <th>Crypto1</th>
-                    <th>Crypto2</th>
-                    <th>Crypto3</th>
+                    <th>Bitcoin</th>
+                    <th>Ethereum</th>
+                    <th>Maker</th>
                 </tr>
             </thead>
             <tbody></tbody>
