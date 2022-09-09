@@ -94,6 +94,11 @@ class StockService(Thread):
                 return True
             return False
     
+    def get_stock_values_from_db(self):
+        #for stock_name in self.stock_names:
+        #    stock_repository.get_stock(stock_name)
+        #return
+        pass 
 
 stock_service=StockService()
 stock_service.start_updating_stocks()

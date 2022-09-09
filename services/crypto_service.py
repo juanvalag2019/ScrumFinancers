@@ -98,6 +98,12 @@ class CryptoService(Thread):
             if(crypto_update['value']>limit):
                 return True
             return False
+
+    def get_crypto_values_from_db(self):
+        #for crypto_name in self.cryptos:
+        #    crypto_repository.get_crypto(stock_name['name'])
+        #return
+        pass 
             
 crypto_service=CryptoService()
 crypto_service.start_updating_cryptos()
