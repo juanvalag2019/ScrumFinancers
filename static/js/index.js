@@ -68,7 +68,6 @@ function getLineChartSeriesTemplate() {
         endLabel: {
             show: true,
             formatter: function (params) {
-                console.log(params);
                 return params.data.assetName + ': $' + params.data.assetValue;
             }
         },
@@ -137,7 +136,6 @@ function getCryptoData() {
                 })
             })
             cryptoData = cryptos;
-            console.log(cryptos);
             cryptoChart = initializeLineChart('crypto-chart', 'Crypto values', convertAssetsToChartSeries(cryptoData, 'history'));
             configTable();
         },
@@ -156,17 +154,16 @@ function insertTableRowData(tableId, values) {
 function transformAssetsHistoriesToRows(assets, historyAttribute) {
     let rows = [];
     let histories = assets.map(function (asset) { return asset[historyAttribute] });
+    console.log(assets.toString());
     histories[0].forEach(function (assetUpdate, idx) {
         let timestamp = assetUpdate.timestamp;
-        let value1 = '$' + assetUpdate.value;
-        let value2 = '$' + histories[1][idx].value;
-        let value3 = '$' + histories[2][idx].value;
-        let value4, value5, value6 = '';
-        if (histories.length > 3) {
-            value4 = '$' + histories[3][idx].value;
-            value5 = '$' + histories[4][idx].value;
-            value6 = '$' + histories[5][idx].value;
-        }
+        let value1, value2, value3, value4, value5, value6 = '';
+        value1 = '$' + assetUpdate.value;
+        value2 = histories[1].length > idx ? '$' + histories[1][idx].value : '';
+        value3 = histories[2].length > idx ? '$' + histories[2][idx].value : '';
+        value4 = histories[3].length > idx ? '$' + histories[3][idx].value : '';
+        value5 = histories[4].length > idx ? '$' + histories[4][idx].value : '';
+        value6 = histories[5].length > idx ? '$' + histories[5][idx].value : '';
         rows.push([formatDate(timestamp), value1, value2, value3, value4, value5, value6]);
     });
     return rows;
@@ -180,7 +177,7 @@ function formatDate(date) {
 }
 
 function configTable() {
-    console.log(stocksData, cryptoData);
+    console.log(stocksData[0], cryptoData[0]);
     let rows = transformAssetsHistoriesToRows(stocksData.concat(cryptoData), 'history');
     rows.forEach(function (row) {
         insertTableRowData('assets-table', row);
@@ -194,7 +191,7 @@ function runIfDataIsPresent(callback) {
         } else {
             runIfDataIsPresent(callback);
         }
-    }, 1000);
+    }, 2000);
 }
 
 getStockData();
